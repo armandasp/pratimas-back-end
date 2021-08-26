@@ -56,7 +56,81 @@ app.delete('/memberships/:id', async (req, res) => {
     await connect.close();
     return res.send(data);
   } catch (e) {
-    res.status(500).send({ error: 'something wrong' });
+    return res.status(500).send({ error: 'something wrong' });
+  }
+});
+
+app.get('/users', async (req, res) => {
+  try {
+    const connect = await client.connect();
+    const data = await connect
+      .db('nodeJS-pratimas')
+      .collection('users')
+      .find()
+      .toArray();
+    await connect.close();
+    res.send(data);
+  } catch (e) {
+    res.status(500).send({ e });
+  }
+});
+
+app.get('/users/asc', async (req, res) => {
+  try {
+    const con = await client.connect();
+    const data = await con
+      .db('nodeJS-pratimas')
+      .collection('users')
+      .find()
+      .sort({ name: 1 })
+      .toArray();
+    await con.close();
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({ err });
+  }
+});
+
+app.get('/users/desc', async (req, res) => {
+  try {
+    const con = await client.connect();
+    const data = await con
+      .db('nodeJS-pratimas')
+      .collection('users')
+      .find()
+      .sort({ name: -1 })
+      .toArray();
+    await con.close();
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({ err });
+  }
+});
+
+app.post('/users', async (req, res) => {
+  if (
+    !req.body.name ||
+    !req.body.surname ||
+    !req.body.email ||
+    !req.body.service_id
+  ) {
+    return res.status(400).send({ error: 'incorrect data passed' });
+  }
+  try {
+    const connect = await client.connect();
+    const response = await connect
+      .db('nodeJS-pratimas')
+      .collection('users')
+      .insertOne({
+        name: req.body.name,
+        surname: req.body.surname,
+        email: req.body.email,
+        secure_id: req.body.secure_id,
+      });
+    await connect.close();
+    return res.send(response);
+  } catch (e) {
+    return res.status(500).send({ error: 'data not passed correctly' });
   }
 });
 
