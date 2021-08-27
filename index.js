@@ -125,7 +125,7 @@ app.post('/users', async (req, res) => {
         name: req.body.name,
         surname: req.body.surname,
         email: req.body.email,
-        secure_id: req.body.secure_id,
+        service_id: req.body.service_id,
       });
     await connect.close();
     return res.send(response);
